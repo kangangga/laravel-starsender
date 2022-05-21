@@ -6,9 +6,7 @@
         "starsender",
         "starsender",
         "Laravel WhatsApp API Gateway Starsender",
-        "starsender.online",
-        "https://starsender.online",
-        "https://starsender.online/rest-api#"
+        "starsender.online"
     ],
     "homepage": "https://github.com/kangangga/laravel-starsender",
     "license": "MIT",
