@@ -1,0 +1,61 @@
+{
+    "name": "kangangga/starsender",
+    "description": "Laravel WhatsApp API Gateway Starsender",
+    "keywords": [
+        "kangangga",
+        "starsender",
+        "starsender",
+        "Laravel WhatsApp API Gateway Starsender",
+        "starsender.online",
+        "https://starsender.online",
+        "https://starsender.online/rest-api#"
+    ],
+    "homepage": "https://github.com/kangangga/laravel-starsender",
+    "license": "MIT",
+    "type": "library",
+    "authors": [
+        {
+            "name": "Angga Saputra",
+            "email": "masangga.com@gmail.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^7.4|^8.1",
+        "guzzlehttp/guzzle": "^7.4",
+        "illuminate/support": "^7.0|^8.0|^9.0"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^6.0",
+        "phpunit/phpunit": "^9.0"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "autoload": {
+        "psr-4": {
+            "Kangangga\\Starsender\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Kangangga\\Starsender\\Tests\\": "tests"
+        }
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit",
+        "test-coverage": "vendor/bin/phpunit --coverage-html coverage"
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Kangangga\\Starsender\\StarsenderServiceProvider"
+            ],
+            "aliases": {
+                "Starsender": "Kangangga\\Starsender\\Facades\\Starsender"
+            }
+        }
+    }
+}
