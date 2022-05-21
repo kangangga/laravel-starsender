@@ -8,13 +8,8 @@ use Kangangga\Starsender\Utils\Endpoint;
 use Kangangga\Starsender\Facades\Starsender;
 
 
-class StarsenderCotroller extends Controller
+class StarsenderController extends Controller
 {
-    public function index()
-    {
-    }
-
-
     public function list()
     {
         dd(Endpoint::list());

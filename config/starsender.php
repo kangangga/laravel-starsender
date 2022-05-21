@@ -19,9 +19,7 @@ return [
     'router' => [
         'enabled' => env('STARSENDER_ROUTER_ENABLED', true),
         'prefix' => 'api/starsender',
-        'middleware' => [
-            \Kangangga\Starsender\Http\Middleware\StarsendeMiddleware::class
-        ],
+        'middleware' => [],
     ],
 
     'default_endpoint' => env('STARSENDER_ENDPOINT', 'default'),
@@ -47,5 +45,14 @@ return [
         ]
     ],
 
-    'webhook_handler' => '',
+    'webhook' => [
+        'enabled' => env('STARSENDER_WEBHOOK_ENABLED', true),
+        'action' => [
+            \Kangangga\Starsender\Http\Controllers\WebhookController::class, 'index'
+        ],
+        'router' => [
+            'prefix' => 'api/starsender/webhook',
+            'middleware' => [],
+        ]
+    ],
 ];

@@ -2,6 +2,4 @@
 
 use Illuminate\Support\Facades\Route;
 
-
-Route::get('/', 'StarsenderCotroller@index');
-Route::get('/list', 'StarsenderCotroller@list');
+Route::get('/list', 'StarsenderController@list');

@@ -39,7 +39,7 @@ class Parser extends Str
             [
                 'tujuan' => static::phone($data['phone']),
                 'message' => $data['message'],
-                'timetable' => $data['timetable'] ?? '',
+                'jadwal' => $data['timetable'] ?? date('Y-m-d H:i:s'),
             ],
             ...$otherData
         );

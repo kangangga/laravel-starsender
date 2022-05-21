@@ -15,10 +15,7 @@ class StarsenderServiceProvider extends ServiceProvider
             return;
         }
 
-        if (config('starsender.router.enabled')) {
-            $this->registerRoutes();
-        }
-
+        $this->registerRoutes();
         $this->regsiterMacro();
         $this->registerMigrations();
 
@@ -64,9 +61,17 @@ class StarsenderServiceProvider extends ServiceProvider
 
     private function registerRoutes()
     {
-        Route::group($this->routeConfiguration(), function () {
-            $this->loadRoutesFrom(__DIR__ . '/Http/routes.php');
-        });
+        if (config('starsender.router.enabled')) {
+            Route::group($this->routeConfiguration(), function () {
+                $this->loadRoutesFrom(__DIR__ . '/Http/routes.php');
+            });
+        }
+
+        if (config('starsender.webhook.enabled')) {
+            Route::group(config('starsender.webhook.router', []), function () {
+                Route::post('/', config('starsender.webhook.action'));
+            });
+        }
     }
 
     private function routeConfiguration()
@@ -75,6 +80,6 @@ class StarsenderServiceProvider extends ServiceProvider
             'namespace' => 'Kangangga\Starsender\Http\Controllers',
             'prefix' => 'starsender',
             'middleware' => [],
-        ], config('starsender.router'));
+        ], config('starsender.router', []));
     }
 }
