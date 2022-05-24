@@ -17,7 +17,7 @@ return [
     ],
 
     'router' => [
-        'enabled' => env('STARSENDER_ROUTER_ENABLED', true),
+        'enabled' => env('STARSENDER_ROUTER_ENABLED', false),
         'prefix' => 'api/starsender',
         'middleware' => [],
     ],
@@ -46,7 +46,7 @@ return [
     ],
 
     'webhook' => [
-        'enabled' => env('STARSENDER_WEBHOOK_ENABLED', true),
+        'enabled' => env('STARSENDER_WEBHOOK_ENABLED', false),
         'action' => [
             \Kangangga\Starsender\Http\Controllers\WebhookController::class, 'index'
         ],

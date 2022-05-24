@@ -3,6 +3,7 @@
 namespace Kangangga\Starsender;
 
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Kangangga\Starsender\Utils\Endpoint;
@@ -19,9 +20,7 @@ class StarsenderServiceProvider extends ServiceProvider
         $this->regsiterMacro();
         $this->registerMigrations();
 
-
         if ($this->app->runningInConsole()) {
-
             $this->publishes([
                 __DIR__ . '/../config/starsender.php' => config_path('starsender.php'),
             ], 'config');

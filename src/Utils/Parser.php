@@ -6,6 +6,11 @@ use Illuminate\Support\Str;
 
 class Parser extends Str
 {
+    public static function has($key, $data)
+    {
+        return array_key_exists($key, $data);
+    }
+
     public static function buttonIf($condition, $data)
     {
         return $condition ? static::button($data) : null;
@@ -13,7 +18,8 @@ class Parser extends Str
 
     public static function button($data)
     {
-        return implode('|', $data['button']);
+
+        return implode('|', $data['buttons']);
     }
 
     public static function url($endpoint, $method)
