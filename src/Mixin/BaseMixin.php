@@ -7,13 +7,14 @@ use Illuminate\Contracts\Foundation\Application;
 
 class BaseMixin
 {
-    use Macroable,
-        ApiSend,
+    use Macroable;
+
+    use ApiSend,
         ApiDevice,
         ApiContact,
         ApiCampaign;
 
-    protected $app;
+    protected Application $app;
 
     public function __construct(Application $app)
     {

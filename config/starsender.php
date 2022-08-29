@@ -2,15 +2,20 @@
 
 
 return [
+
     'enabled' => env('STARSENDER_ENABLED', true),
+
     'api_key_profile' => env('STARSENDER_API_PROFILE_KEY'),
+
     'check_before_send' => env('STARSENDER_CHECK_BEFORE_SEND', false),
 
     'api' => [
         'url' => env('STARSENDER_API_URL', 'https://starsender.online/api'),
-        'timeout' => 0,
-        'connect_timeout' => 0,
-        'debug' => env('STARSENDER_DEBUG', false),
+        'options' => [
+            'timeout' => 10,
+            'connect_timeout' => 10,
+            'debug' => env('STARSENDER_DEBUG', false),
+        ],
         'headers' => [
             'apikey' => env('STARSENDER_API_KEY'),
         ],

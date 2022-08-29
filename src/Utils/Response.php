@@ -77,9 +77,11 @@ class Response
     public function __call($name, $arguments)
     {
         if (!method_exists($this, $name)) {
+
             if (method_exists($this->response, $name)) {
                 return $this->response->{$name}($arguments);
             }
+
             throw new \BadMethodCallException("Method $name does not exist.");
         }
 

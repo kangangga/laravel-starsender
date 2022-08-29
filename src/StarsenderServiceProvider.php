@@ -46,15 +46,16 @@ class StarsenderServiceProvider extends ServiceProvider
 
     public function registerMacros()
     {
+        /**
+         * @see http://url.com
+         */
         Http::macro('starsender', function (): PendingRequest {
             $config = config('starsender.api');
-            $http = Http::timeout($config['timeout'])
-                ->connectTimeout($config['connect_timeout'])
-                ->withOptions([
-                    'debug' => $config['debug'],
-                ])
-                ->withHeaders($config['headers'])->baseUrl($config['url']);
+            // $http = Http::timeout($config['timeout']);
+            // $http->connectTimeout($config['connect_timeout']);
+            $http = Http::withOptions($config['options'] ?? []);
 
+            $http->withHeaders($config['headers'])->baseUrl($config['url']);
             if (config('starsender.check_before_send', false)) {
                 $http->beforeSending(Str::parseCallback("$config[beforeSending]@sending"));
             }
