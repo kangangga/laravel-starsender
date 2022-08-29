@@ -2,11 +2,12 @@
 
 namespace Kangangga\Starsender;
 
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
-use Kangangga\Starsender\Utils\Endpoint;
+use Illuminate\Http\Client\PendingRequest;
 
 class StarsenderServiceProvider extends ServiceProvider
 {
@@ -16,15 +17,15 @@ class StarsenderServiceProvider extends ServiceProvider
             return;
         }
 
-        $this->registerRoutes();
-        $this->regsiterMacro();
-        $this->registerMigrations();
-
         if ($this->app->runningInConsole()) {
             $this->publishes([
                 __DIR__ . '/../config/starsender.php' => config_path('starsender.php'),
             ], 'config');
         }
+
+        $this->registerMacros();
+        $this->registerRoutes();
+        $this->registerMigrations();
     }
 
     public function register()
@@ -33,8 +34,8 @@ class StarsenderServiceProvider extends ServiceProvider
         $this->mergeConfigFrom(__DIR__ . '/../config/starsender.php', 'starsender');
 
         // Register the main class to use with the facade
-        $this->app->singleton('starsender', function () {
-            return new Starsender;
+        $this->app->singleton('starsender', function ($app) {
+            return new Starsender($app);
         });
     }
 
@@ -43,19 +44,23 @@ class StarsenderServiceProvider extends ServiceProvider
         $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
     }
 
-    public function regsiterMacro()
+    public function registerMacros()
     {
-        Http::macro('starsender', function () {
+        Http::macro('starsender', function (): PendingRequest {
             $config = config('starsender.api');
-            return Http::timeout($config['timeout'])
+            $http = Http::timeout($config['timeout'])
                 ->connectTimeout($config['connect_timeout'])
                 ->withOptions([
                     'debug' => $config['debug'],
                 ])
                 ->withHeaders($config['headers'])->baseUrl($config['url']);
-        });
 
-        Endpoint::registerMacro();
+            if (config('starsender.check_before_send', false)) {
+                $http->beforeSending(Str::parseCallback("$config[beforeSending]@sending"));
+            }
+
+            return $http;
+        });
     }
 
     private function registerRoutes()

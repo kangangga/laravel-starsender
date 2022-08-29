@@ -2,6 +2,7 @@
 
 namespace Kangangga\Starsender\Utils;
 
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 
 class Parser extends Str
@@ -41,12 +42,30 @@ class Parser extends Str
 
     public static function parseData($data, ...$otherData)
     {
+        $message = Arr::get($data, 'message');
+        $phone = Arr::get($data, 'phone', Arr::get($data, 'tujuan'));
+
+        $defaultData = [
+            'message' => $message,
+            'tujuan' => static::phone($phone),
+        ];
+
+        if (Arr::exists($data, 'timetable') || Arr::exists($data, 'jadwal')) {
+            $timetable = Arr::get($data, 'timetable', Arr::get($data, 'jadwal', date('Y-m-d H:i:s')));
+
+            if ($timetable instanceof \Illuminate\Support\Carbon) {
+                $timetable = $timetable->format('Y-m-d H:i:s');
+            }
+
+            $defaultData['jadwal'] = $timetable;
+        }
+
+        if (Arr::exists($data, 'group_name')) {
+            $defaultData['tujuan'] = Arr::get($data, 'group_name');
+        }
+
         return array_merge(
-            [
-                'tujuan' => static::phone($data['phone']),
-                'message' => $data['message'],
-                'jadwal' => $data['timetable'] ?? date('Y-m-d H:i:s'),
-            ],
+            $defaultData,
             ...$otherData
         );
     }
