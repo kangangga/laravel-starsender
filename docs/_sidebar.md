@@ -1,0 +1,4 @@
+- [Home](/)
+- [Installation](install.md)
+- [License](LICENSE.md)
+- [Contributing](CONTRIBUTING.md)
