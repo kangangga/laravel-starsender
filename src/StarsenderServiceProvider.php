@@ -34,7 +34,7 @@ class StarsenderServiceProvider extends ServiceProvider
         $this->mergeConfigFrom(__DIR__ . '/../config/starsender.php', 'starsender');
 
         // Register the main class to use with the facade
-        $this->app->singleton('starsender', function ($app) {
+        $this->app->bind('starsender', function ($app) {
             return new Starsender($app);
         });
     }
@@ -46,19 +46,17 @@ class StarsenderServiceProvider extends ServiceProvider
 
     public function registerMacros()
     {
-        /**
-         * @see http://url.com
-         */
         Http::macro('starsender', function (): PendingRequest {
             $config = config('starsender.api');
-            // $http = Http::timeout($config['timeout']);
-            // $http->connectTimeout($config['connect_timeout']);
             $http = Http::withOptions($config['options'] ?? []);
 
             $http->withHeaders($config['headers'])->baseUrl($config['url']);
-            if (config('starsender.check_before_send', false)) {
-                $http->beforeSending(Str::parseCallback("$config[beforeSending]@sending"));
-            }
+
+            // if (config('starsender.check_before_send', false)) {
+            //     $http->beforeSending(Str::parseCallback("$config[beforeSending]@sending"));
+            // }
+
+            $http->beforeSending(Str::parseCallback("$config[beforeSending]@sending"));
 
             return $http;
         });

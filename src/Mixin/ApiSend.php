@@ -2,8 +2,8 @@
 
 namespace Kangangga\Starsender\Mixin;
 
-use File;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Http;
 use Kangangga\Starsender\Utils\Parser;
 use Kangangga\Starsender\Utils\Response;
@@ -19,10 +19,16 @@ trait ApiSend
     public function sendText(array $data)
     {
         $endpoint = $this->isNewVersion($data) ? '/v2/sendText' : '/sendText';
-
-        return new Response(
-            Http::starsender()
-                ->post($endpoint, Parser::parseData($data))
+        // $this->data['message'] = (new Message($data['message']))
+        //     ->setHeader("==HEADER==")
+        //     ->setBody($data['message'])
+        //     ->setFooter("==FOOTER==")
+        //     ->toString();
+        return $this->responseWithValidator(
+            Http::starsender()->post($endpoint, Parser::parseData($this->data)),
+            [
+                'phone' => $this->phoneValidation(),
+            ]
         );
     }
 
@@ -46,7 +52,12 @@ trait ApiSend
             $request->attach('file', $contents, $file_name);
         }
 
-        return new Response($request->post('/sendButton', $data));
+        return $this->responseWithValidator(
+            $request->post('/sendButton', $data),
+            [
+                'phone' => $this->phoneValidation(),
+            ]
+        );
     }
 
     /**
@@ -70,11 +81,15 @@ trait ApiSend
     {
         $endpoint = $this->isNewVersion($data) ? '/v2/sendFiles' : '/sendFiles';
 
-        return new Response(
+        return $this->responseWithValidator(
             Http::starsender()
                 ->post($endpoint, Parser::parseData($data, [
                     'file' => $data['file']
-                ]))
+                ])),
+            [
+                'file' => 'required',
+                'phone' => $this->phoneValidation(),
+            ]
         );
     }
 
@@ -91,11 +106,14 @@ trait ApiSend
 
         $endpoint = $this->isNewVersion($data) ? '/v2/sendFilesUpload' : '/sendFilesUpload';
 
-
-        return new Response(
+        return $this->responseWithValidator(
             Http::starsender()
                 ->attach('file', $contents, $file_name)
-                ->post($endpoint, Parser::parseData($data))
+                ->post($endpoint, Parser::parseData($data)),
+            [
+                'file' => 'required',
+                'phone' => $this->phoneValidation(),
+            ]
         );
     }
 }

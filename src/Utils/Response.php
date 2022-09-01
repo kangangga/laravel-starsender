@@ -2,51 +2,36 @@
 
 namespace Kangangga\Starsender\Utils;
 
+use Illuminate\Support\Arr;
+use Illuminate\Support\Collection;
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Http\Client\Response as BaseResponse;
+
 class Response
 {
-    private $object;
-    private $response;
+    protected $code = 404;
+    protected $status = false;
+    protected $message = null;
+    protected $message_id = null;
 
-    public int $code;
-    public bool $status;
-    public ?int $message_id;
-    public null|array|string|\stdClass $message;
+    protected $data = [];
 
-    public array $result;
+    /** @var Collection $result */
+    protected $result = [];
 
-    public array|\Illuminate\Support\Collection $data;
-
-    public function __construct(\Illuminate\Http\Client\Response $response)
+    public function __construct($response)
     {
-        $this->object =  $response->object();
-        $this->response = $response;
-
-        $this->__parseResponse();
+        $this->result = $this->parseResponse($response);
     }
 
-    public function array()
+    public function toArray()
     {
         return $this->result->toArray();
     }
 
-    public function json($options = 0)
+    public function toJson($options = 0)
     {
         return $this->result->toJson($options);
-    }
-
-    public function collect()
-    {
-        return $this->result->collect();
-    }
-
-    public function getResponse()
-    {
-        return $this->response;
-    }
-
-    public function getResult()
-    {
-        return $this->result;
     }
 
     public function getMessageId()
@@ -54,37 +39,27 @@ class Response
         return $this->message_id;
     }
 
-    private function __parseResponse()
+    protected function parseResponse($response): Collection
     {
-        $this->code = $this->response->status();
-        $this->data = collect($this->object->data ?? null);
-        $this->status = $this->object->status ?? $this->response->successful();
-        $this->message = $this->object->message ?? null;
-
-        if ($this->data->count() == 1) {
-            $this->message_id = $this->data->first() ?? null;
+        if ($response instanceof Validator) {
+            $this->code = 403;
+            $this->status = false;
+            $this->message = $response->errors()->first();
+        } else if ($response instanceof BaseResponse) {
+            $result =  $response->json();
+            $this->code = $response->status();
+            $this->data = Arr::get($result, 'data', []);
+            $this->status = Arr::get($result, 'status', $response->successful());
+            $this->message = Arr::get($result, 'message');
+            $this->message_id = Arr::get($this->data, 'message_id');
         }
 
-        $this->result = [
+        return new Collection([
             'code' => $this->code,
             'data' => $this->data,
             'status' => $this->status,
             'message' => $this->message,
             'message_id' => $this->message_id,
-        ];
-    }
-
-    public function __call($name, $arguments)
-    {
-        if (!method_exists($this, $name)) {
-
-            if (method_exists($this->response, $name)) {
-                return $this->response->{$name}($arguments);
-            }
-
-            throw new \BadMethodCallException("Method $name does not exist.");
-        }
-
-        return $this->{$name}($arguments);
+        ]);
     }
 }
