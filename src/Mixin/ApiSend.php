@@ -19,11 +19,7 @@ trait ApiSend
     public function sendText(array $data)
     {
         $endpoint = $this->isNewVersion($data) ? '/v2/sendText' : '/sendText';
-        // $this->data['message'] = (new Message($data['message']))
-        //     ->setHeader("==HEADER==")
-        //     ->setBody($data['message'])
-        //     ->setFooter("==FOOTER==")
-        //     ->toString();
+
         return $this->responseWithValidator(
             Http::starsender()->post($endpoint, Parser::parseData($this->data)),
             [
